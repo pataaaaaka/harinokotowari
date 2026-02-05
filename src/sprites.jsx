@@ -16,11 +16,11 @@ export const SPRITES = {
   
   // ===== 敵キャラクター =====
   // 1行目の敵たち
-  ENEMY_PURPLE: { x: 3, y: 0 },   // 紫のキャラ（知能型）
-  ENEMY_ORANGE: { x: 4, y: 0 },   // オレンジのキャラ（通常）
-  ENEMY_PINK: { x: 5, y: 0 },     // ピンクのキャラ（高速）
-  ENEMY_BLUE: { x: 6, y: 0 },     // 青いキャラ
-  ENEMY_GREEN: { x: 7, y: 0 },    // 緑のキャラ（重装）
+  ENEMY_PURPLE: { x: 3, y: 3 },   // 紫のキャラ（知能型）
+  ENEMY_ORANGE: { x: 0, y: 4 },   // オレンジのキャラ（通常）
+  ENEMY_PINK: { x: 4, y: 5 },     // ピンクのキャラ（高速）
+  ENEMY_BLUE: { x: 5, y: 5 },     // 青いキャラ
+  ENEMY_GREEN: { x: 3, y: 5 },    // 緑のキャラ（重装）
   
   // 2行目の動物・モンスター
   ENEMY_CAT: { x: 0, y: 1 },      // 黒猫
@@ -31,10 +31,10 @@ export const SPRITES = {
   ENEMY_SNAKE: { x: 5, y: 1 },    // ヘビ
   
   // ゲームで使用する敵（タイプ別）
-  ENEMY_NORMAL: { x: 4, y: 0 },   // オレンジ（通常敵）
-  ENEMY_FAST: { x: 5, y: 0 },     // ピンク（高速敵）
-  ENEMY_SLOW: { x: 7, y: 0 },     // 緑（重装敵）HP2
-  ENEMY_SMART: { x: 3, y: 0 },    // 紫（知能敵）
+  ENEMY_NORMAL: { x: 3, y: 4 },   // オレンジ（通常敵）
+  ENEMY_FAST: { x: 4, y: 5 },     // ピンク（高速敵）
+  ENEMY_SLOW: { x: 3, y: 5 },     // 緑（重装敵）HP2
+  ENEMY_SMART: { x: 4, y: 5 },    // 紫（知能敵）
   
   // ===== アイテム =====
   // 3行目のアイテム
@@ -55,8 +55,8 @@ export const SPRITES = {
   ITEM_CRYSTAL_YELLOW: { x: 7, y: 3 },// 黄色のクリスタル
   
   // ゲームで使用するアイテム
-  ITEM_MOXA: { x: 0, y: 3 },    // 赤い炎（お灸）
-  ITEM_HERB: { x: 2, y: 3 },    // 緑の葉（薬草）
+  ITEM_MOXA: { x: 5, y: 6 },    // 赤い炎（お灸）
+  ITEM_HERB: { x: 0, y: 5 },    // 緑の葉（薬草）
   
   // ===== 鍼（針）=====
   // 5行目の武器・道具
@@ -67,7 +67,7 @@ export const SPRITES = {
   WEAPON_AXE: { x: 4, y: 4 },      // 斧
   
   // ゲームで使用する鍼
-  NEEDLE: { x: 1, y: 4 },       // ナイフを鍼として使用
+  NEEDLE: { x: 3, y: 7 },       // ナイフを鍼として使用
   
   // ===== 爆弾・爆発 =====
   BOMB_BLACK: { x: 0, y: 5 },      // 黒い爆弾
@@ -76,8 +76,8 @@ export const SPRITES = {
   EXPLOSION_2: { x: 3, y: 5 },     // 爆発エフェクト2
   
   // ゲームで使用
-  BOMB: { x: 0, y: 5 },            // お灸（爆弾）
-  EXPLOSION: { x: 2, y: 5 },       // 爆発
+  BOMB: { x: 0, y: 8 },            // お灸（爆弾）
+  EXPLOSION: { x: 2, y: 8 },       // 爆発
   
   // ===== 壁・障害物 =====
   WALL_STONE: { x: 0, y: 6 },      // 石の壁
@@ -87,8 +87,8 @@ export const SPRITES = {
   BOX_GRAY: { x: 4, y: 6 },        // 灰色の箱
   
   // ゲームで使用
-  WALL_SOLID: { x: 0, y: 6 },      // 石の壁（破壊不可）
-  WALL_BREAK: { x: 3, y: 6 },      // 茶色の箱（破壊可能）
+  WALL_SOLID: { x: 4, y: 8 },      // 石の壁（破壊不可）
+  WALL_BREAK: { x: 4, y: 7 },      // 茶色の箱（破壊可能）
 };
 
 // Sprite コンポーネント
