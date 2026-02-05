@@ -31,10 +31,10 @@ export const SPRITES = {
   ENEMY_SNAKE: { x: 5, y: 1 },    // ヘビ
   
   // ゲームで使用する敵（タイプ別）
-  ENEMY_NORMAL: { x: 3, y: 4 },   // オレンジ（通常敵）
-  ENEMY_FAST: { x: 4, y: 5 },     // ピンク（高速敵）
-  ENEMY_SLOW: { x: 3, y: 5 },     // 緑（重装敵）HP2
-  ENEMY_SMART: { x: 4, y: 5 },    // 紫（知能敵）
+  ENEMY_NORMAL: { x: 0, y: 3 },   // オレンジ（通常敵）
+  ENEMY_FAST: { x: 0, y: 4 },     // ピンク（高速敵）
+  ENEMY_SLOW: { x: 1, y: 3 },     // 緑（重装敵）HP2
+  ENEMY_SMART: { x: 1, y: 4 },    // 紫（知能敵）
   
   // ===== アイテム =====
   // 3行目のアイテム
