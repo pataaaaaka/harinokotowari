@@ -92,7 +92,7 @@ export const SPRITES = {
 };
 
 // Sprite コンポーネント
-export const Sprite = ({ sprite, size = 32, style = {} }) => {
+export const Sprite = ({ sprite, size = 16, style = {} }) => {
   if (!sprite) return null;
   
   const scale = size / SPRITE_SIZE;
