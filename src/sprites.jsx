@@ -43,7 +43,7 @@ export const Sprite = ({ sprite, size = 16, style = {} }) => {
         height: `${size}px`,
         background: `url(/spritesheet.png) ${-sprite.x * SPRITE_SIZE}px ${-sprite.y * SPRITE_SIZE}px`,
         // 間隔なし
-　　　　　backgroundSize: `${16 * 8 * scale}px auto` // = 128px × scale
+　　　　　backgroundSize: `${16 * 16 * scale}px auto` // = 128px × scale
         imageRendering: 'pixelated',
         WebkitUserSelect: 'none',
         userSelect: 'none',
