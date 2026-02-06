@@ -12,7 +12,7 @@ export const SPRITES = {
   ENEMY_NORMAL: { x: 0, y: 2 },  // 通常敵
   ENEMY_FAST: { x: 1, y: 0 },    // 高速敵
   ENEMY_SLOW: { x: 3, y: 0 },    // 重装敵（HP2）
-  ENEMY_SMART: { x: 2, y: 5 },   // 知能敵
+  ENEMY_SMART: { x: 0, y: 7},   // 知能敵
   
   // ===== アイテム =====
   ITEM_MOXA: { x: 0, y: 7 },     // お灸アイテム
