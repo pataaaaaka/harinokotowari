@@ -19,7 +19,7 @@ export const SPRITES = {
   ITEM_HERB: { x: 1, y: 4 },     // 薬草アイテム
   
   // ===== 武器 =====
-  NEEDLE: { x: 0, y: 7 },        // 鍼（通常）
+  NEEDLE: { x: 7, y: 0 },        // 鍼（通常）
   NEEDLE_ALL: { x: 0, y: 5 },    // 必殺技の鍼（ALLボタン）
   
   // ===== 爆発系 =====
