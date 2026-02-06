@@ -1,7 +1,7 @@
 // スプライト設定ファイル - 経絡ボンバー用
 // src/sprites.js
 
-export const SPRITE_SIZE = 32; // 各スプライトのサイズ（ピクセル）
+export const SPRITE_SIZE = 16; // 各スプライトのサイズ（ピクセル）
 
 // スプライトシート上の位置（x, y は左上から数えた位置）
 export const SPRITES = {
@@ -31,7 +31,7 @@ export const SPRITES = {
 };
 
 // Sprite コンポーネント
-export const Sprite = ({ sprite, size = 32, style = {} }) => {
+export const Sprite = ({ sprite, size = 16, style = {} }) => {
   if (!sprite) return null;
   
   const scale = size / SPRITE_SIZE;
@@ -43,7 +43,7 @@ export const Sprite = ({ sprite, size = 32, style = {} }) => {
         height: `${size}px`,
         background: `url(/spritesheet.png) ${-sprite.x * SPRITE_SIZE}px ${-sprite.y * SPRITE_SIZE}px`,
         // 間隔なし
-　　　　　backgroundSize: `${16 * 8 * scale}px auto` // = 128px × scale
+　　　　　backgroundSize: `${16 * 8 * scale}px auto`, // = 128px × scale
         imageRendering: 'pixelated',
         WebkitUserSelect: 'none',
         userSelect: 'none',
