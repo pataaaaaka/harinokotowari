@@ -10,7 +10,7 @@ export const SPRITES = {
   
   // ===== 敵キャラクター =====
   ENEMY_NORMAL: { x: 0, y: 3 },  // 通常敵
-  ENEMY_FAST: { x: 1, y: 0 },    // 高速敵
+  ENEMY_FAST: { x: 1.5, y: 0 },    // 高速敵
   ENEMY_SLOW: { x: 3, y: 0 },    // 重装敵（HP2）
   ENEMY_SMART: { x: 1, y: 0 },   // 知能敵
   
