@@ -838,80 +838,110 @@ const KeirakuBomberFull = () => {
   }, []);
 
   const initStage = useCallback((isTutorial = false, stageIndex = 0) => {
-    const stage = isTutorial ? null : STAGES[stageIndex];
-    const size = stage ? stage.size : GRID_SIZE;
-    const shape = stage ? stage.shape : 'square';
-    
-    let newGrid = generateStageShape(shape, size);
-    
-    for (let y = 1; y <= 2; y++) {
-      for (let x = 1; x <= 2; x++) {
-        newGrid[y][x] = CELL_TYPES.EMPTY;
-      }
+  const stage = isTutorial ? null : STAGES[stageIndex];
+  const size = stage ? stage.size : GRID_SIZE;
+  const shape = stage ? stage.shape : 'square';
+  
+  let newGrid = generateStageShape(shape, size);
+  
+  for (let y = 1; y <= 2; y++) {
+    for (let x = 1; x <= 2; x++) {
+      newGrid[y][x] = CELL_TYPES.EMPTY;
     }
-    
-    for (let y = 1; y < size - 1; y++) {
-      for (let x = 1; x < size - 1; x++) {
-        if (newGrid[y][x] !== CELL_TYPES.EMPTY) continue;
-        if ((x === 1 || x === 2) && (y === 1 || y === 2)) continue;
-        
-        const rand = Math.random();
-        if (rand < (isTutorial ? 0.3 : 0.4)) {
-          const itemRand = Math.random();
-          if (itemRand < 0.10) newGrid[y][x] = CELL_TYPES.ITEM_MOXA;
-          else if (itemRand < 0.20) newGrid[y][x] = CELL_TYPES.ITEM_HERB;
-          else if (itemRand < 0.30) newGrid[y][x] = CELL_TYPES.ITEM_FIRE;
-          else newGrid[y][x] = CELL_TYPES.WALL_BREAK;
-        }
-      }
-    }
-    
-    setGrid(newGrid);
-
-    const newEnemies = [];
-    const enemyTypes = isTutorial 
-      ? [ENEMY_TYPES.NORMAL] 
-      : [ENEMY_TYPES.NORMAL, ENEMY_TYPES.FAST, ENEMY_TYPES.SLOW, ENEMY_TYPES.SMART];
-    
-    const enemyCount = isTutorial ? 2 : 10;
-    
-    for (let i = 0; i < enemyCount; i++) {
-      let x, y;
-      let attempts = 0;
-      do {
-        x = Math.floor(Math.random() * (size - 4)) + 2;
-        y = Math.floor(Math.random() * (size - 4)) + 2;
-        attempts++;
-        if (attempts > 100) break;
-      } while (
-        newGrid[y][x] !== CELL_TYPES.EMPTY ||
-        (x < 4 && y < 4) ||
-        newEnemies.some(e => e.x === x && e.y === y)
-      );
+  }
+  
+  for (let y = 1; y < size - 1; y++) {
+    for (let x = 1; x < size - 1; x++) {
+      if (newGrid[y][x] !== CELL_TYPES.EMPTY) continue;
+      if ((x === 1 || x === 2) && (y === 1 || y === 2)) continue;
       
-      if (attempts <= 100) {
-        const type = enemyTypes[i % enemyTypes.length];
-        newEnemies.push({ 
-          x, y, 
-          id: Date.now() + i, 
-          type: type,
-          hp: type.hp,
-          direction: ['up', 'down', 'left', 'right'][Math.floor(Math.random() * 4)]
-        });
+      const rand = Math.random();
+      if (rand < (isTutorial ? 0.3 : 0.4)) {
+        const itemRand = Math.random();
+        if (itemRand < 0.10) newGrid[y][x] = CELL_TYPES.ITEM_MOXA;
+        else if (itemRand < 0.20) newGrid[y][x] = CELL_TYPES.ITEM_HERB;
+        else if (itemRand < 0.30) newGrid[y][x] = CELL_TYPES.ITEM_FIRE;
+        else newGrid[y][x] = CELL_TYPES.WALL_BREAK;
       }
     }
-    setEnemies(newEnemies);
-    setPlayerPos({ x: 1, y: 1 });
-    setItems([]);
-    setNeedles([]); // 🔥 追加：鍼をクリア
-    setMoxas([]);   // 🔥 追加：お灸もクリア
-    setExplosions([]); // 🔥 追加：爆発もクリア
-    setScore(0);
-    setMoxaCount(isTutorial ? 2 : 0);
-    setKiGauge(0); 
-    setGameOver(false);
-    setGameWon(false);
-  }, [generateStageShape]);
+  }
+  
+  setGrid(newGrid);
+
+  // 🔥 追加：到達可能なマスを計算
+  const reachable = new Set();
+  const queue = [[1, 1]]; // プレイヤーの初期位置
+  reachable.add('1,1');
+  
+  while (queue.length > 0) {
+    const [cx, cy] = queue.shift();
+    const neighbors = [
+      [cx - 1, cy], [cx + 1, cy], [cx, cy - 1], [cx, cy + 1]
+    ];
+    
+    for (const [nx, ny] of neighbors) {
+      const key = `${nx},${ny}`;
+      if (reachable.has(key)) continue;
+      if (nx < 0 || nx >= size || ny < 0 || ny >= size) continue;
+      
+      const cell = newGrid[ny][nx];
+      // 🔥 空マスまたは壊せる壁・アイテムなら到達可能
+      if (cell === CELL_TYPES.EMPTY || 
+          cell === CELL_TYPES.WALL_BREAK ||
+          cell === CELL_TYPES.ITEM_MOXA ||
+          cell === CELL_TYPES.ITEM_HERB ||
+          cell === CELL_TYPES.ITEM_FIRE) {
+        reachable.add(key);
+        queue.push([nx, ny]);
+      }
+    }
+  }
+
+  const newEnemies = [];
+  const enemyTypes = isTutorial 
+    ? [ENEMY_TYPES.NORMAL] 
+    : [ENEMY_TYPES.NORMAL, ENEMY_TYPES.FAST, ENEMY_TYPES.SLOW, ENEMY_TYPES.SMART];
+  
+  const enemyCount = isTutorial ? 2 : 10;
+  
+  for (let i = 0; i < enemyCount; i++) {
+    let x, y;
+    let attempts = 0;
+    do {
+      x = Math.floor(Math.random() * (size - 4)) + 2;
+      y = Math.floor(Math.random() * (size - 4)) + 2;
+      attempts++;
+      if (attempts > 100) break;
+    } while (
+      newGrid[y][x] !== CELL_TYPES.EMPTY ||
+      !reachable.has(`${x},${y}`) ||  // 🔥 追加：到達可能チェック
+      (x < 4 && y < 4) ||
+      newEnemies.some(e => e.x === x && e.y === y)
+    );
+    
+    if (attempts <= 100) {
+      const type = enemyTypes[i % enemyTypes.length];
+      newEnemies.push({ 
+        x, y, 
+        id: Date.now() + i, 
+        type: type,
+        hp: type.hp,
+        direction: ['up', 'down', 'left', 'right'][Math.floor(Math.random() * 4)]
+      });
+    }
+  }
+  setEnemies(newEnemies);
+  setPlayerPos({ x: 1, y: 1 });
+  setItems([]);
+  setNeedles([]);
+  setMoxas([]);
+  setExplosions([]);
+  setScore(0);
+  setMoxaCount(isTutorial ? 2 : 0);
+  setKiGauge(0); 
+  setGameOver(false);
+  setGameWon(false);
+}, [generateStageShape]);
 
   useEffect(() => {
     initStage(true, 0);
