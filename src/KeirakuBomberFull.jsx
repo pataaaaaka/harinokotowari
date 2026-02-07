@@ -978,24 +978,44 @@ const KeirakuBomberFull = () => {
       setKiGauge(0); 
       
       const directions = needleDirections === 8 
-        ? ['up', 'down', 'left', 'right', 'up-left', 'up-right', 'down-left', 'down-right']
-        : ['up', 'down', 'left', 'right'];
+      ? ['up', 'down', 'left', 'right', 'up-left', 'up-right', 'down-left', 'down-right']
+      : ['up', 'down', 'left', 'right'];
+    
+      // 🔥 修正：10秒間（200回）連続で鍼を発射
+      let shotCount = 0;
+      const maxShots = 200; // 10秒 ÷ 50ms = 200回
+    
+      const allAttackInterval = setInterval(() => {
+        if (shotCount >= maxShots) {
+          clearInterval(allAttackInterval);
+          return;
+        }
       
-      directions.forEach(dir => {
-        setNeedles(prev => [...prev, {
-          x: playerPos.x, y: playerPos.y, direction: dir,
-          id: Date.now() + Math.random(), range: needleRange, traveled: 0,
-          isAll: true,
-        }]);
-      });
+        directions.forEach(dir => {
+          setNeedles(prev => [...prev, {
+            x: playerPosRef.current.x, 
+            y: playerPosRef.current.y, 
+            direction: dir,
+            id: Date.now() + Math.random(), 
+            range: 20, // 🔥 長射程（通常より長く）
+            traveled: 0,
+            isAll: true,
+          }]);
+        });
+      
+        shotCount++;
+      }, 50); // 50msごとに発射
+    
     } else {
       setNeedles(prev => [...prev, {
         x: playerPos.x, y: playerPos.y, direction,
-        id: Date.now() + Math.random(), range: needleRange, traveled: 0,
+        id: Date.now() + Math.random(), 
+        range: needleRange, 
+        traveled: 0,
         isAll: false,
       }]);
     }
-  }, [playerPos, needleRange, needleDirections, gameOver, gameWon]);
+  }, [playerPos, needleRange, needleDirections, gameOver, gameWon, kiGauge]);
 
   const handleVirtualButton = (key) => {
     const event = new KeyboardEvent('keydown', {
@@ -1109,7 +1129,7 @@ const KeirakuBomberFull = () => {
       return newEnemies;
     });
 
-    if (explosionCells.some(e => e.x === playerPos.x && e.y === playerPos.y)) {
+    if (explosionCells.some(e => e.x === playerPosRef.current.x && e.y === playerPosRef.current.y)) {
       setGameOver(true);
       playBeep(294, 0.3);
     }
