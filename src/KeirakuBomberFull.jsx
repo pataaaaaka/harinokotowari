@@ -1368,8 +1368,7 @@ const KeirakuBomberFull = () => {
                 animation: 'itemBounce 0.5s ease-in-out infinite',
               }}>
                 <Sprite 
-                  sprite={item.type === 'moxa' ? SPRITES.ITEM_MOXA : SPRITES.ITEM_HERB :
-        SPRITES.ITEM_FIRE} 
+                  sprite={item.type === 'moxa' ? SPRITES.ITEM_MOXA : SPRITES.ITEM_HERB : SPRITES.ITEM_FIRE} 
                   size={CELL_SIZE * 0.8}
                 />
               </div>
