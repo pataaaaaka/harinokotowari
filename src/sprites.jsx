@@ -17,6 +17,7 @@ export const SPRITES = {
   // ===== アイテム =====
   ITEM_MOXA: '/sprites/item-moxa.png',
   ITEM_HERB: '/sprites/item-herb.png',
+  ITEM_FIRE: '/sprites/item-fire.png',
   
   // ===== 武器 =====
   NEEDLE: '/sprites/needle.png',
