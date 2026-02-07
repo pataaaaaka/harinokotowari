@@ -1001,7 +1001,7 @@ const KeirakuBomberFull = () => {
         // 🔥 追加：ALL鍼を強制的に即座に削除
         setTimeout(() => {
           setNeedles(prev => prev.filter(n => !n.isAll));
-        }, 100); // 100ms後に削除
+        }, 500); // 500ms後に削除
         return;
       }
     
