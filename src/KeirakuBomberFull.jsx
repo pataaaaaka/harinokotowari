@@ -961,7 +961,7 @@ const KeirakuBomberFull = () => {
 
     setMoxaCount(c => c - 1);
     setMoxas(prev => [...prev, { x: playerPos.x, y: playerPos.y, timer: MOXA_TIMER, id: Date.now() }]);
-  }, [playerPos, moxas, moxaCount, gameOver, gameWon]);
+  }, [playerPos, moxas, moxaCount, gameOver, gameWon, kiGauge]);
 
   const shootNeedle = useCallback((direction) => {
     if (gameOver || gameWon) return;
