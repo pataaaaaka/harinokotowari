@@ -638,6 +638,8 @@ const VirtualGamepad = ({ onButtonPress, moxaCount }) => {
           ...buttonStyle('A', 55),
           border: '3px solid #ffd700',
           backgroundColor: activeButton === 'A' ? '#ffd700' : 'rgba(255, 215, 0, 0.2)',
+                           kiGauge >= 100 ? 'rgba(255, 215, 0, 0.3)' : 'rgba(102, 102, 102, 0.2)',
+          opacity: kiGauge >= 100 ? 1 : 0.5,
         }}>
         ALL
       </div>
@@ -669,6 +671,7 @@ const KeirakuBomberFull = () => {
   const [moxaPower, setMoxaPower] = useState(1); 
   const [needleDirections, setNeedleDirections] = useState(4);
   const [needleSpeed, setNeedleSpeed] = useState(NEEDLE_SPEED);
+  const [kiGauge, setKiGauge] = useState(0);
 
   const gridRef = useRef(grid);
   const moxasRef = useRef(moxas);
@@ -874,6 +877,7 @@ const KeirakuBomberFull = () => {
     setItems([]);
     setScore(0);
     setMoxaCount(isTutorial ? 2 : 0);
+    setKiGauge(0); 
     setGameOver(false);
     setGameWon(false);
   }, [generateStageShape]);
@@ -934,10 +938,18 @@ const KeirakuBomberFull = () => {
 
   const shootNeedle = useCallback((direction) => {
     if (gameOver || gameWon) return;
+
+    // 🔥 追加：ALLボタンは気ゲージが満タンの時のみ
+    if (direction === 'all' && kiGauge < 100) {
+      playBeep(200, 0.1); // 気が足りない音
+      return;
+    }
     
     SoundEffects.needle();
     
     if (direction === 'all') {
+      setKiGauge(0); 
+      
       const directions = needleDirections === 8 
         ? ['up', 'down', 'left', 'right', 'up-left', 'up-right', 'down-left', 'down-right']
         : ['up', 'down', 'left', 'right'];
@@ -1057,6 +1069,7 @@ const KeirakuBomberFull = () => {
         if (explosionCells.some(e => e.x === enemy.x && e.y === enemy.y)) {
           SoundEffects.enemyDefeat();
           setScore(s => s + enemy.type.score);
+          setKiGauge(k => Math.min(k + 25, 100));
           return { ...enemy, hp: enemy.hp - 1 };
         }
         return enemy;
@@ -1137,6 +1150,7 @@ const KeirakuBomberFull = () => {
                 const newHp = e.hp - 1;
                 if (newHp <= 0) {
                   SoundEffects.enemyDefeat();
+                  setKiGauge(k => Math.min(k + 25, 100)); 
                 }
                 return { ...e, hp: newHp };
               }
@@ -1317,6 +1331,44 @@ const KeirakuBomberFull = () => {
           <div>📐: <strong>{needleDirections}</strong></div>
           <div>👹: <strong>{enemies.length}</strong></div>
           <div>⭐: <strong>{score}</strong></div>
+        </div>
+
+        {/* 🔥 追加：気ゲージバー */}
+        <div style={{
+          width: '100%',
+          marginBottom: '8px',
+          padding: '0 8px',
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: isMobile ? '10px' : '12px',
+          }}>
+            <span style={{ color: '#ffd700', fontWeight: 'bold' }}>気</span>
+            <div style={{
+              flex: 1,
+              height: '14px',
+              backgroundColor: '#1a1a2e',
+              border: '2px solid #ffd700',
+              borderRadius: '8px',
+              overflow: 'hidden',
+            }}>
+              <div style={{
+                width: `${kiGauge}%`,
+                height: '100%',
+                backgroundColor: kiGauge >= 100 ? '#ffd700' : '#4ecdc4',
+                transition: 'width 0.3s ease, background-color 0.3s ease',
+              }} />
+            </div>
+            <span style={{ 
+              color: kiGauge >= 100 ? '#ffd700' : '#fff',
+              fontSize: '10px',
+              minWidth: '35px',
+            }}>
+              {kiGauge}/100
+            </span>
+          </div>
         </div>
 
         <div style={{
