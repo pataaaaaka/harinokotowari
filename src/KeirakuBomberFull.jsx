@@ -857,9 +857,9 @@ const KeirakuBomberFull = () => {
         const rand = Math.random();
         if (rand < (isTutorial ? 0.3 : 0.4)) {
           const itemRand = Math.random();
-          if (itemRand < 0.08) newGrid[y][x] = CELL_TYPES.ITEM_MOXA;
-          else if (itemRand < 0.15) newGrid[y][x] = CELL_TYPES.ITEM_HERB;
-          else if (itemRand < 0.18) newGrid[y][x] = CELL_TYPES.ITEM_FIRE;
+          if (itemRand < 0. 10) newGrid[y][x] = CELL_TYPES.ITEM_MOXA;
+          else if (itemRand < 0.20) newGrid[y][x] = CELL_TYPES.ITEM_HERB;
+          else if (itemRand < 0.30) newGrid[y][x] = CELL_TYPES.ITEM_FIRE;
           else newGrid[y][x] = CELL_TYPES.WALL_BREAK;
         }
       }
