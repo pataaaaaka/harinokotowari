@@ -13,6 +13,7 @@ const CELL_TYPES = {
   WALL_SOLID: 2,
   ITEM_MOXA: 3,
   ITEM_HERB: 4,
+  ITEM_FIRE: 5,  // 🔥 追加
 };
 
 // 敵の種類
@@ -665,6 +666,7 @@ const KeirakuBomberFull = () => {
 
   const [moxaCount, setMoxaCount] = useState(0);
   const [needleRange, setNeedleRange] = useState(3);
+  const [moxaPower, setMoxaPower] = useState(1); 
   const [needleDirections, setNeedleDirections] = useState(4);
   const [needleSpeed, setNeedleSpeed] = useState(NEEDLE_SPEED);
 
@@ -827,6 +829,7 @@ const KeirakuBomberFull = () => {
           const itemRand = Math.random();
           if (itemRand < 0.08) newGrid[y][x] = CELL_TYPES.ITEM_MOXA;
           else if (itemRand < 0.15) newGrid[y][x] = CELL_TYPES.ITEM_HERB;
+          else if (itemRand < 0.18) newGrid[y][x] = CELL_TYPES.ITEM_FIRE;
           else newGrid[y][x] = CELL_TYPES.WALL_BREAK;
         }
       }
@@ -903,6 +906,9 @@ const KeirakuBomberFull = () => {
           else if (rand < 0.66) setNeedleDirections(8);
           else setNeedleSpeed(s => Math.max(s - 10, 20));
           setScore(s => s + 100);
+        } else if (item.type === 'fire') {  // 🔥 追加
+          setMoxaPower(p => Math.min(p + 1, 3)); // 最大レベル3
+          setScore(s => s + 150);
         }
         setItems(prev => prev.filter(i => i.id !== item.id));
       }
@@ -997,7 +1003,8 @@ const KeirakuBomberFull = () => {
 
   const triggerExplosion = useCallback((x, y) => {
     const explosionCells = [{ x, y }];
-    const distance = 2;
+    const distance = 1 + moxaPower; // 🔥 修正：火力に応じて範囲拡大
+    const canPenetrate = moxaPower >= 3;
     const dirs = [[-1,0], [1,0], [0,-1], [0,1]];
 
     dirs.forEach(([dx, dy]) => {
@@ -1005,9 +1012,10 @@ const KeirakuBomberFull = () => {
         const nx = x + dx * i, ny = y + dy * i;
         if (nx < 0 || nx >= grid[0]?.length || ny < 0 || ny >= grid.length) break;
         const cell = grid[ny]?.[nx];
-        if (cell === CELL_TYPES.WALL_SOLID) break;
+        if (cell === CELL_TYPES.WALL_SOLID && !canPenetrate) break;
         explosionCells.push({ x: nx, y: ny });
-        if (cell === CELL_TYPES.WALL_BREAK || cell === CELL_TYPES.ITEM_MOXA || cell === CELL_TYPES.ITEM_HERB) break;
+        if (cell === CELL_TYPES.WALL_BREAK || cell === CELL_TYPES.ITEM_MOXA || cell === CELL_TYPES.ITEM_HERB ||
+          cell === CELL_TYPES.ITEM_FIRE) break;
       }
     });
 
@@ -1032,6 +1040,11 @@ const KeirakuBomberFull = () => {
         if (cell === CELL_TYPES.ITEM_HERB) {
           newGrid[y][x] = CELL_TYPES.EMPTY;
           setItems(prev => [...prev, { x, y, type: 'herb', id: Date.now() + Math.random() }]);
+        }
+        // 🔥 追加：火力アイテムのドロップ処理
+        if (cell === CELL_TYPES.ITEM_FIRE) {
+        newGrid[y][x] = CELL_TYPES.EMPTY;
+        setItems(prev => [...prev, { x, y, type: 'fire', id: Date.now() + Math.random() }]);
         }
       });
       return newGrid;
@@ -1058,7 +1071,7 @@ const KeirakuBomberFull = () => {
       setGameOver(true);
       playBeep(294, 0.3);
     }
-  }, [grid, playerPos]);
+  }, [grid, playerPos, moxaPower]);
 
   useEffect(() => {
     if (gameOver || gameWon) return;
@@ -1297,6 +1310,7 @@ const KeirakuBomberFull = () => {
           justifyContent: 'center',
         }}>
           <div>🔥: <strong>{moxaCount}</strong></div>
+          <div>💥: <strong>Lv{moxaPower}</strong></div> {/* 🔥 追加 */}
           <div>💉: <strong>{needleRange}</strong></div>
           <div>📐: <strong>{needleDirections}</strong></div>
           <div>👹: <strong>{enemies.length}</strong></div>
@@ -1354,7 +1368,8 @@ const KeirakuBomberFull = () => {
                 animation: 'itemBounce 0.5s ease-in-out infinite',
               }}>
                 <Sprite 
-                  sprite={item.type === 'moxa' ? SPRITES.ITEM_MOXA : SPRITES.ITEM_HERB} 
+                  sprite={item.type === 'moxa' ? SPRITES.ITEM_MOXA : SPRITES.ITEM_HERB :
+        SPRITES.ITEM_FIRE} 
                   size={CELL_SIZE * 0.8}
                 />
               </div>
