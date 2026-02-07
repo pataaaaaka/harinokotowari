@@ -1007,7 +1007,7 @@ const KeirakuBomberFull = () => {
             y: playerPosRef.current.y, 
             direction: dir,
             id: Date.now() + Math.random(), 
-            range: 20, // 🔥 長射程（通常より長く）
+            range: 50, // 🔥 長射程（通常より長く）
             traveled: 0,
             isAll: true,
           }]);
