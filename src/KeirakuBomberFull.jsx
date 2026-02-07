@@ -635,11 +635,10 @@ const VirtualGamepad = ({ onButtonPress, moxaCount }) => {
 
       <div onTouchStart={() => handleButton('a', 'A')} onClick={() => handleButton('a', 'A')}
         style={{
-          ...buttonStyle('A', 55),
-          border: '3px solid #ffd700',
-          backgroundColor: activeButton === 'A' ? '#ffd700' : 'rgba(255, 215, 0, 0.2)',
-                           kiGauge >= 100 ? 'rgba(255, 215, 0, 0.3)' : 'rgba(102, 102, 102, 0.2)',
-          opacity: kiGauge >= 100 ? 1 : 0.5,
+    ...buttonStyle('A', 55),
+    border: `3px solid ${kiGauge >= 100 ? '#ffd700' : '#666'}`,
+    backgroundColor: activeButton === 'A' ? '#ffd700' : (kiGauge >= 100 ? 'rgba(255, 215, 0, 0.3)' : 'rgba(102, 102, 102, 0.2)'),
+    opacity: kiGauge >= 100 ? 1 : 0.5,
         }}>
         ALL
       </div>
