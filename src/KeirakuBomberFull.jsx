@@ -970,9 +970,8 @@ const KeirakuBomberFull = () => {
   const shootNeedle = useCallback((direction) => {
   if (gameOver || gameWon) return;
 
-  // 🔥 追加：ALLボタンは気ゲージが満タンの時のみ
   if (direction === 'all' && kiGauge < 100) {
-    playBeep(200, 0.1); // 気が足りない音
+    playBeep(200, 0.1);
     return;
   }
   
@@ -981,7 +980,6 @@ const KeirakuBomberFull = () => {
   if (direction === 'all') {
     setKiGauge(0); 
 
-    // 🔥 修正：既存のインターバルをクリア
     if (allAttackInterval) {
       clearInterval(allAttackInterval);
     }
@@ -990,18 +988,15 @@ const KeirakuBomberFull = () => {
       ? ['up', 'down', 'left', 'right', 'up-left', 'up-right', 'down-left', 'down-right']
       : ['up', 'down', 'left', 'right'];
   
-    // 🔥 修正：5秒間（100回）連続で鍼を発射
     let shotCount = 0;
-    const maxShots = 100; // 5秒 ÷ 50ms = 100回
+    const maxShots = 100;
   
     const interval = setInterval(() => {
       if (shotCount >= maxShots) {
         clearInterval(interval);
         setAllAttackInterval(null);
-        // 🔥 追加：ALL鍼を強制的に即座に削除
-        setTimeout(() => {
-          setNeedles(prev => prev.filter(n => !n.isAll));
-        }, 500); // 500ms後に削除
+        // 🔥 削除：タイムアウトによる強制削除を削除
+        // もう何もしない - 鍼は自然に消える
         return;
       }
     
@@ -1018,9 +1013,9 @@ const KeirakuBomberFull = () => {
       });
     
       shotCount++;
-    }, 50); // 50msごとに発射
+    }, 50);
 
-    setAllAttackInterval(interval); // 🔥 追加：インターバルIDを保存
+    setAllAttackInterval(interval);
   
   } else {
     setNeedles(prev => [...prev, {
@@ -1032,7 +1027,7 @@ const KeirakuBomberFull = () => {
     }]);
   }
 }, [playerPos, needleRange, needleDirections, gameOver, gameWon, kiGauge, allAttackInterval]);
-
+  
   const handleVirtualButton = (key) => {
     const event = new KeyboardEvent('keydown', {
       key: key,
