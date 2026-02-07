@@ -559,7 +559,11 @@ const EndingScreen = ({ score, onRestart }) => {
 const VirtualGamepad = ({ onButtonPress, moxaCount, kiGauge }) => {
   const [activeButton, setActiveButton] = useState(null);
 
-  const handleButton = (key, label) => {
+  const handleButton = (key, label, event) => {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
     setActiveButton(label);
     onButtonPress(key);
     setTimeout(() => setActiveButton(null), 100);
@@ -597,19 +601,31 @@ const VirtualGamepad = ({ onButtonPress, moxaCount, kiGauge }) => {
       zIndex: 1000,
       borderTop: '2px solid rgba(78, 205, 196, 0.3)',
     }}>
+      {/* 方向パッド */}
       <div style={{ position: 'relative', width: '150px', height: '150px' }}>
-        <div onTouchStart={() => handleButton('ArrowUp', '↑')} onClick={() => handleButton('ArrowUp', '↑')}
+        <div 
+          onTouchStart={(e) => handleButton('ArrowUp', '↑', e)} 
+          onClick={(e) => e.preventDefault()}
           style={{ ...buttonStyle('↑'), position: 'absolute', top: '0', left: '50px' }}>↑</div>
-        <div onTouchStart={() => handleButton('ArrowLeft', '←')} onClick={() => handleButton('ArrowLeft', '←')}
+        <div 
+          onTouchStart={(e) => handleButton('ArrowLeft', '←', e)} 
+          onClick={(e) => e.preventDefault()}
           style={{ ...buttonStyle('←'), position: 'absolute', top: '50px', left: '0' }}>←</div>
-        <div onTouchStart={() => handleButton('ArrowRight', '→')} onClick={() => handleButton('ArrowRight', '→')}
+        <div 
+          onTouchStart={(e) => handleButton('ArrowRight', '→', e)} 
+          onClick={(e) => e.preventDefault()}
           style={{ ...buttonStyle('→'), position: 'absolute', top: '50px', left: '100px' }}>→</div>
-        <div onTouchStart={() => handleButton('ArrowDown', '↓')} onClick={() => handleButton('ArrowDown', '↓')}
+        <div 
+          onTouchStart={(e) => handleButton('ArrowDown', '↓', e)} 
+          onClick={(e) => e.preventDefault()}
           style={{ ...buttonStyle('↓'), position: 'absolute', top: '100px', left: '50px' }}>↓</div>
       </div>
 
+      {/* お灸ボタン */}
       <div>
-        <div onTouchStart={() => handleButton(' ', '灸')} onClick={() => handleButton(' ', '灸')}
+        <div 
+          onTouchStart={(e) => handleButton(' ', '灸', e)} 
+          onClick={(e) => e.preventDefault()}
           style={{
             width: '60px', height: '60px', borderRadius: '50%',
             border: '3px solid #ff6b6b',
@@ -622,23 +638,35 @@ const VirtualGamepad = ({ onButtonPress, moxaCount, kiGauge }) => {
         </div>
       </div>
 
+      {/* 鍼ボタン（4方向） */}
       <div style={{ display: 'grid', gridTemplateColumns: '50px 50px', gridTemplateRows: '50px 50px', gap: '8px' }}>
-        <div onTouchStart={() => handleButton('z', 'Z')} onClick={() => handleButton('z', 'Z')}
+        <div 
+          onTouchStart={(e) => handleButton('z', 'Z', e)} 
+          onClick={(e) => e.preventDefault()}
           style={buttonStyle('Z')}>Z<br/>↑</div>
-        <div onTouchStart={() => handleButton('c', 'C')} onClick={() => handleButton('c', 'C')}
+        <div 
+          onTouchStart={(e) => handleButton('c', 'C', e)} 
+          onClick={(e) => e.preventDefault()}
           style={buttonStyle('C')}>C<br/>←</div>
-        <div onTouchStart={() => handleButton('x', 'X')} onClick={() => handleButton('x', 'X')}
+        <div 
+          onTouchStart={(e) => handleButton('x', 'X', e)} 
+          onClick={(e) => e.preventDefault()}
           style={buttonStyle('X')}>X<br/>↓</div>
-        <div onTouchStart={() => handleButton('v', 'V')} onClick={() => handleButton('v', 'V')}
+        <div 
+          onTouchStart={(e) => handleButton('v', 'V', e)} 
+          onClick={(e) => e.preventDefault()}
           style={buttonStyle('V')}>V<br/>→</div>
       </div>
 
-      <div onTouchStart={() => handleButton('a', 'A')} onClick={() => handleButton('a', 'A')}
+      {/* ALLボタン */}
+      <div 
+        onTouchStart={(e) => handleButton('a', 'A', e)} 
+        onClick={(e) => e.preventDefault()}
         style={{
-    ...buttonStyle('A', 55),
-    border: `3px solid ${kiGauge >= 100 ? '#ffd700' : '#666'}`,
-    backgroundColor: activeButton === 'A' ? '#ffd700' : (kiGauge >= 100 ? 'rgba(255, 215, 0, 0.3)' : 'rgba(102, 102, 102, 0.2)'),
-    opacity: kiGauge >= 100 ? 1 : 0.5,
+          ...buttonStyle('A', 55),
+          border: `3px solid ${kiGauge >= 100 ? '#ffd700' : '#666'}`,
+          backgroundColor: activeButton === 'A' ? '#ffd700' : (kiGauge >= 100 ? 'rgba(255, 215, 0, 0.3)' : 'rgba(102, 102, 102, 0.2)'),
+          opacity: kiGauge >= 100 ? 1 : 0.5,
         }}>
         ALL
       </div>
