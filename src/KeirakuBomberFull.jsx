@@ -1025,8 +1025,10 @@ const KeirakuBomberFull = () => {
       if (shotCount >= maxShots) {
         clearInterval(interval);
         setAllAttackInterval(null);
-        // 🔥 削除：タイムアウトによる強制削除を削除
-        // もう何もしない - 鍼は自然に消える
+        // 🔥 修正：1秒後に強制削除
+        setTimeout(() => {
+          setNeedles(prev => prev.filter(n => !n.isAll));
+        }, 1000);
         return;
       }
     
