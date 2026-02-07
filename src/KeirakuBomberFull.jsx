@@ -1387,9 +1387,14 @@ const KeirakuBomberFull = () => {
                   size={CELL_SIZE * 0.7}
                   style={{
                     transform: 
-                      n.direction === 'right' || n.direction === 'up-right' || n.direction === 'down-right' ? 'rotate(90deg)' :
-                      n.direction === 'left' || n.direction === 'up-left' || n.direction === 'down-left' ? 'rotate(-90deg)' :
-                      n.direction === 'down' ? 'rotate(180deg)' :
+                      n.direction === 'up' ? 'rotate(-90deg)' :
+                      n.direction === 'up-right' ? 'rotate(-45deg)' :
+                      n.direction === 'right' ? 'rotate(0deg)' :
+                      n.direction === 'down-right' ? 'rotate(45deg)' :
+                      n.direction === 'down' ? 'rotate(90deg)' :
+                      n.direction === 'down-left' ? 'rotate(135deg)' :
+                      n.direction === 'left' ? 'rotate(180deg)' :
+                      n.direction === 'up-left' ? 'rotate(225deg)' :
                       'rotate(0deg)',
                   }}
                 />
