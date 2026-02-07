@@ -872,7 +872,7 @@ const KeirakuBomberFull = () => {
       ? [ENEMY_TYPES.NORMAL] 
       : [ENEMY_TYPES.NORMAL, ENEMY_TYPES.FAST, ENEMY_TYPES.SLOW, ENEMY_TYPES.SMART];
     
-    const enemyCount = isTutorial ? 2 : 4;
+    const enemyCount = isTutorial ? 2 : 10;
     
     for (let i = 0; i < enemyCount; i++) {
       let x, y;
