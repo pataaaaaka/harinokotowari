@@ -699,6 +699,7 @@ const KeirakuBomberFull = () => {
   const [needleDirections, setNeedleDirections] = useState(4);
   const [needleSpeed, setNeedleSpeed] = useState(NEEDLE_SPEED);
   const [kiGauge, setKiGauge] = useState(0);
+  const [allAttackInterval, setAllAttackInterval] = useState(null); // 🔥 追加
 
   const gridRef = useRef(grid);
   const moxasRef = useRef(moxas);
@@ -902,6 +903,9 @@ const KeirakuBomberFull = () => {
     setEnemies(newEnemies);
     setPlayerPos({ x: 1, y: 1 });
     setItems([]);
+    setNeedles([]); // 🔥 追加：鍼をクリア
+    setMoxas([]);   // 🔥 追加：お灸もクリア
+    setExplosions([]); // 🔥 追加：爆発もクリア
     setScore(0);
     setMoxaCount(isTutorial ? 2 : 0);
     setKiGauge(0); 
@@ -976,18 +980,24 @@ const KeirakuBomberFull = () => {
     
     if (direction === 'all') {
       setKiGauge(0); 
+
+      // 🔥 修正：既存のインターバルをクリア
+      if (allAttackInterval) {
+        clearInterval(allAttackInterval);
+      }
       
       const directions = needleDirections === 8 
       ? ['up', 'down', 'left', 'right', 'up-left', 'up-right', 'down-left', 'down-right']
       : ['up', 'down', 'left', 'right'];
     
-      // 🔥 修正：10秒間（200回）連続で鍼を発射
+      // 🔥 修正：5秒間（100回）連続で鍼を発射
       let shotCount = 0;
-      const maxShots = 200; // 10秒 ÷ 50ms = 200回
+      const maxShots = 100; // 5秒 ÷ 50ms = 100回
     
-      const allAttackInterval = setInterval(() => {
+      const interval = setInterval(() => {
         if (shotCount >= maxShots) {
-          clearInterval(allAttackInterval);
+          clearInterval(interval);  // ← ここを interval に修正！
+          setAllAttackInterval(null);
           return;
         }
       
@@ -1005,6 +1015,8 @@ const KeirakuBomberFull = () => {
       
         shotCount++;
       }, 50); // 50msごとに発射
+
+      setAllAttackInterval(interval); // 🔥 追加：インターバルIDを保存
     
     } else {
       setNeedles(prev => [...prev, {
@@ -1322,6 +1334,15 @@ const KeirakuBomberFull = () => {
       playBeep(294, 0.3);
     }
   }, [enemies, playerPos, gameOver, gameWon]);
+
+  // 🔥 ここから追加 ↓
+  useEffect(() => {
+    if ((gameOver || gameWon) && allAttackInterval) {
+      clearInterval(allAttackInterval);
+      setAllAttackInterval(null);
+      setNeedles(prev => prev.filter(n => !n.isAll));
+    }
+  }, [gameOver, gameWon, allAttackInterval]);
 
   // ステップ8: レンダリング条件を追加
   if (showIntro) {
@@ -1653,6 +1674,14 @@ const KeirakuBomberFull = () => {
             )}
             {!tutorialMode && (
               <button onClick={() => { 
+                // 🔥 追加：ALL攻撃のインターバルをクリア
+                if (allAttackInterval) {
+                  clearInterval(allAttackInterval);
+                  setAllAttackInterval(null);
+                }
+                // 🔥 追加：すべての鍼をクリア
+                setNeedles([]);
+                
                 const nextStage = currentStageIndex + 1;
                 if (nextStage >= STAGES.length) {
                   setShowEnding(true);
