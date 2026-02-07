@@ -968,66 +968,70 @@ const KeirakuBomberFull = () => {
   }, [playerPos, moxas, moxaCount, gameOver, gameWon, kiGauge]);
 
   const shootNeedle = useCallback((direction) => {
-    if (gameOver || gameWon) return;
+  if (gameOver || gameWon) return;
 
-    // 🔥 追加：ALLボタンは気ゲージが満タンの時のみ
-    if (direction === 'all' && kiGauge < 100) {
-      playBeep(200, 0.1); // 気が足りない音
-      return;
+  // 🔥 追加：ALLボタンは気ゲージが満タンの時のみ
+  if (direction === 'all' && kiGauge < 100) {
+    playBeep(200, 0.1); // 気が足りない音
+    return;
+  }
+  
+  SoundEffects.needle();
+  
+  if (direction === 'all') {
+    setKiGauge(0); 
+
+    // 🔥 修正：既存のインターバルをクリア
+    if (allAttackInterval) {
+      clearInterval(allAttackInterval);
     }
     
-    SoundEffects.needle();
-    
-    if (direction === 'all') {
-      setKiGauge(0); 
-
-      // 🔥 修正：既存のインターバルをクリア
-      if (allAttackInterval) {
-        clearInterval(allAttackInterval);
-      }
-      
-      const directions = needleDirections === 8 
+    const directions = needleDirections === 8 
       ? ['up', 'down', 'left', 'right', 'up-left', 'up-right', 'down-left', 'down-right']
       : ['up', 'down', 'left', 'right'];
+  
+    // 🔥 修正：5秒間（100回）連続で鍼を発射
+    let shotCount = 0;
+    const maxShots = 100; // 5秒 ÷ 50ms = 100回
+  
+    const interval = setInterval(() => {
+      if (shotCount >= maxShots) {
+        clearInterval(interval);
+        setAllAttackInterval(null);
+        // 🔥 追加：ALL鍼を強制的に即座に削除
+        setTimeout(() => {
+          setNeedles(prev => prev.filter(n => !n.isAll));
+        }, 100); // 100ms後に削除
+        return;
+      }
     
-      // 🔥 修正：5秒間（100回）連続で鍼を発射
-      let shotCount = 0;
-      const maxShots = 100; // 5秒 ÷ 50ms = 100回
+      directions.forEach(dir => {
+        setNeedles(prev => [...prev, {
+          x: playerPosRef.current.x, 
+          y: playerPosRef.current.y, 
+          direction: dir,
+          id: Date.now() + Math.random(), 
+          range: 100,
+          traveled: 0,
+          isAll: true,
+        }]);
+      });
     
-      const interval = setInterval(() => {
-        if (shotCount >= maxShots) {
-          clearInterval(interval);  // ← ここを interval に修正！
-          setAllAttackInterval(null);
-          return;
-        }
-      
-        directions.forEach(dir => {
-          setNeedles(prev => [...prev, {
-            x: playerPosRef.current.x, 
-            y: playerPosRef.current.y, 
-            direction: dir,
-            id: Date.now() + Math.random(), 
-            range: 100, // 🔥 長射程（通常より長く）
-            traveled: 0,
-            isAll: true,
-          }]);
-        });
-      
-        shotCount++;
-      }, 50); // 50msごとに発射
+      shotCount++;
+    }, 50); // 50msごとに発射
 
-      setAllAttackInterval(interval); // 🔥 追加：インターバルIDを保存
-    
-    } else {
-      setNeedles(prev => [...prev, {
-        x: playerPos.x, y: playerPos.y, direction,
-        id: Date.now() + Math.random(), 
-        range: needleRange, 
-        traveled: 0,
-        isAll: false,
-      }]);
-    }
-  }, [playerPos, needleRange, needleDirections, gameOver, gameWon, kiGauge]);
+    setAllAttackInterval(interval); // 🔥 追加：インターバルIDを保存
+  
+  } else {
+    setNeedles(prev => [...prev, {
+      x: playerPos.x, y: playerPos.y, direction,
+      id: Date.now() + Math.random(), 
+      range: needleRange, 
+      traveled: 0,
+      isAll: false,
+    }]);
+  }
+}, [playerPos, needleRange, needleDirections, gameOver, gameWon, kiGauge, allAttackInterval]);
 
   const handleVirtualButton = (key) => {
     const event = new KeyboardEvent('keydown', {
