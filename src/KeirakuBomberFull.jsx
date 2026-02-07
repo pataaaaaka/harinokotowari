@@ -946,12 +946,14 @@ const KeirakuBomberFull = () => {
         setNeedles(prev => [...prev, {
           x: playerPos.x, y: playerPos.y, direction: dir,
           id: Date.now() + Math.random(), range: needleRange, traveled: 0,
+          isAll: true,
         }]);
       });
     } else {
       setNeedles(prev => [...prev, {
         x: playerPos.x, y: playerPos.y, direction,
         id: Date.now() + Math.random(), range: needleRange, traveled: 0,
+        isAll: false,
       }]);
     }
   }, [playerPos, needleRange, needleDirections, gameOver, gameWon]);
@@ -1383,7 +1385,7 @@ const KeirakuBomberFull = () => {
                 fontSize: '18px', zIndex: 8,
               }}>
                 <Sprite 
-                  sprite={SPRITES.NEEDLE} 
+                  sprite={n.isAll ? SPRITES.NEEDLE_ALL : SPRITES.NEEDLE} 
                   size={CELL_SIZE * 0.7}
                   style={{
                     transform: 
