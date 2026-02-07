@@ -556,7 +556,7 @@ const EndingScreen = ({ score, onRestart }) => {
 };
 
 // 仮想ゲームパッド
-const VirtualGamepad = ({ onButtonPress, moxaCount }) => {
+const VirtualGamepad = ({ onButtonPress, moxaCount, kiGauge }) => {
   const [activeButton, setActiveButton] = useState(null);
 
   const handleButton = (key, label) => {
@@ -1651,6 +1651,7 @@ const KeirakuBomberFull = () => {
         <VirtualGamepad 
           onButtonPress={handleVirtualButton}
           moxaCount={moxaCount}
+          kiGauge={kiGauge}
         />
       )}
 
