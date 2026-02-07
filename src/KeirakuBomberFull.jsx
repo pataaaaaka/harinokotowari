@@ -1075,77 +1075,76 @@ const KeirakuBomberFull = () => {
   }, [gameOver, gameWon]);
 
   const triggerExplosion = useCallback((x, y) => {
-    const explosionCells = [{ x, y }];
-    const distance = 1 + moxaPower; // 🔥 修正：火力に応じて範囲拡大
-    const canPenetrate = moxaPower >= 3;
-    const dirs = [[-1,0], [1,0], [0,-1], [0,1]];
+  const explosionCells = [{ x, y }];
+  const distance = 1 + moxaPower;
+  const canPenetrate = moxaPower >= 3;
+  const dirs = [[-1,0], [1,0], [0,-1], [0,1]];
 
-    dirs.forEach(([dx, dy]) => {
-      for (let i = 1; i <= distance; i++) {
-        const nx = x + dx * i, ny = y + dy * i;
-        if (nx < 0 || nx >= grid[0]?.length || ny < 0 || ny >= grid.length) break;
-        const cell = grid[ny]?.[nx];
-        if (cell === CELL_TYPES.WALL_SOLID && !canPenetrate) break;
-        explosionCells.push({ x: nx, y: ny });
-        if (cell === CELL_TYPES.WALL_BREAK || cell === CELL_TYPES.ITEM_MOXA || cell === CELL_TYPES.ITEM_HERB ||
-          cell === CELL_TYPES.ITEM_FIRE) break;
+  dirs.forEach(([dx, dy]) => {
+    for (let i = 1; i <= distance; i++) {
+      const nx = x + dx * i, ny = y + dy * i;
+      if (nx < 0 || nx >= grid[0]?.length || ny < 0 || ny >= grid.length) break;
+      const cell = grid[ny]?.[nx];
+      if (cell === CELL_TYPES.WALL_SOLID && !canPenetrate) break;
+      explosionCells.push({ x: nx, y: ny });
+      if (cell === CELL_TYPES.WALL_BREAK || cell === CELL_TYPES.ITEM_MOXA || 
+          cell === CELL_TYPES.ITEM_HERB || cell === CELL_TYPES.ITEM_FIRE) break;
+    }
+  });
+
+  const newExplosions = explosionCells.map(pos => ({ ...pos, id: Date.now() + Math.random() }));
+  setExplosions(prev => [...prev, ...newExplosions]);
+  setTimeout(() => {
+    setExplosions(prev => prev.filter(e => !newExplosions.some(ne => ne.id === e.id)));
+  }, EXPLOSION_DURATION);
+
+  setGrid(prevGrid => {
+    const newGrid = prevGrid.map(row => [...row]);
+    explosionCells.forEach(({ x, y }) => {
+      const cell = newGrid[y]?.[x];
+      if (cell === CELL_TYPES.WALL_BREAK) {
+        newGrid[y][x] = CELL_TYPES.EMPTY;
+        setScore(s => s + 10);
       }
-    });
-
-    const newExplosions = explosionCells.map(pos => ({ ...pos, id: Date.now() + Math.random() }));
-    setExplosions(prev => [...prev, ...newExplosions]);
-    setTimeout(() => {
-      setExplosions(prev => prev.filter(e => !newExplosions.some(ne => ne.id === e.id)));
-    }, EXPLOSION_DURATION);
-
-    setGrid(prevGrid => {
-      const newGrid = prevGrid.map(row => [...row]);
-      explosionCells.forEach(({ x, y }) => {
-        const cell = newGrid[y]?.[x];
-        if (cell === CELL_TYPES.WALL_BREAK) {
-          newGrid[y][x] = CELL_TYPES.EMPTY;
-          setScore(s => s + 10);
-        }
-        if (cell === CELL_TYPES.ITEM_MOXA) {
-          newGrid[y][x] = CELL_TYPES.EMPTY;
-          setItems(prev => [...prev, { x, y, type: 'moxa', id: Date.now() + Math.random() }]);
-        }
-        if (cell === CELL_TYPES.ITEM_HERB) {
-          newGrid[y][x] = CELL_TYPES.EMPTY;
-          setItems(prev => [...prev, { x, y, type: 'herb', id: Date.now() + Math.random() }]);
-        }
-        // 🔥 追加：火力アイテムのドロップ処理
-        if (cell === CELL_TYPES.ITEM_FIRE) {
+      if (cell === CELL_TYPES.ITEM_MOXA) {
+        newGrid[y][x] = CELL_TYPES.EMPTY;
+        setItems(prev => [...prev, { x, y, type: 'moxa', id: Date.now() + Math.random() }]);
+      }
+      if (cell === CELL_TYPES.ITEM_HERB) {
+        newGrid[y][x] = CELL_TYPES.EMPTY;
+        setItems(prev => [...prev, { x, y, type: 'herb', id: Date.now() + Math.random() }]);
+      }
+      if (cell === CELL_TYPES.ITEM_FIRE) {
         newGrid[y][x] = CELL_TYPES.EMPTY;
         setItems(prev => [...prev, { x, y, type: 'fire', id: Date.now() + Math.random() }]);
-        }
-      });
-      return newGrid;
-    });
-
-    setEnemies(prev => {
-      const newEnemies = prev.map(enemy => {
-        if (explosionCells.some(e => e.x === enemy.x && e.y === enemy.y)) {
-          SoundEffects.enemyDefeat();
-          setScore(s => s + enemy.type.score);
-          setKiGauge(k => Math.min(k + 25, 100));
-          return { ...enemy, hp: enemy.hp - 1 };
-        }
-        return enemy;
-      }).filter(e => e.hp > 0);
-      
-      if (newEnemies.length === 0) {
-        setGameWon(true);
-        SoundEffects.stageClear(); 
       }
-      return newEnemies;
     });
+    return newGrid;
+  });
 
-    if (explosionCells.some(e => e.x === playerPosRef.current.x && e.y === playerPosRef.current.y)) {
-      setGameOver(true);
-      playBeep(294, 0.3);
+  setEnemies(prev => {
+    const newEnemies = prev.map(enemy => {
+      if (explosionCells.some(e => e.x === enemy.x && e.y === enemy.y)) {
+        SoundEffects.enemyDefeat();
+        setScore(s => s + enemy.type.score);
+        setKiGauge(k => Math.min(k + 25, 100));
+        return { ...enemy, hp: enemy.hp - 1 };
+      }
+      return enemy;
+    }).filter(e => e.hp > 0);
+    
+    if (newEnemies.length === 0) {
+      setGameWon(true);
+      SoundEffects.stageClear(); 
     }
-  }, [grid, playerPos, moxaPower]);
+    return newEnemies;
+  });
+
+  if (explosionCells.some(e => e.x === playerPosRef.current.x && e.y === playerPosRef.current.y)) {
+    setGameOver(true);
+    playBeep(294, 0.3);
+  }
+}, [grid, playerPos, moxaPower]);
 
   useEffect(() => {
     if (gameOver || gameWon) return;
@@ -1198,6 +1197,17 @@ const KeirakuBomberFull = () => {
           setItems(prev => [...prev, { x, y, type: 'herb', id: Date.now() + Math.random() }]);
           return null;
         }
+
+         // 🔥 追加：火力アイテムの処理
+         if (cell === CELL_TYPES.ITEM_FIRE) {
+           setGrid(g => {
+             const ng = g.map(row => [...row]);
+             ng[y][x] = CELL_TYPES.EMPTY;
+             return ng;
+           });
+           setItems(prev => [...prev, { x, y, type: 'fire', id: Date.now() + Math.random() }]);
+           return null;
+         }
         
         if (cell === CELL_TYPES.WALL_SOLID) return null;
         
